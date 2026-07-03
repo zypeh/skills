@@ -1,4 +1,4 @@
-### ZYPEH skills
+## ZYPEH skills
 
 > Grandmaster grade 25 years of craftmanship. Bald tier UNIX hacker style skill.
 
@@ -10,8 +10,7 @@ This is some skills written by zypeh that is super opinionated because he eats s
 
 ##### Done, it will be added to `~/.claude/skills` which is readable by opencode and claude code. The rest you need to figure it out yourself.
 
-## What is
-
+### What is
 
 ### spec-format
   - It defines schemas in markdown + xml tag + YAML because AI trains via it. And I added some xml tag to add some tight harness to LLM to achieve great power like Kurapika.
