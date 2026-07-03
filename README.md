@@ -40,3 +40,20 @@ This is some skills written by zypeh that is super opinionated because he eats s
 ##### and these are the context for you to do strip off the unused context and leaving the most important context for LLM to execute in a session. This is good for handsoff me personally believe.
 
 
+### roast
+  - It make questions and turn your vague requirement into a solid proposal, this skill is to make sure the question and solution really converges.
+  - First it makes a DAG of question like a tree, think 6,7 (!) steps ahead what ideas you want then,
+  - Instead of asking one question at a time, this skill batched it to at most 4 that covers the most surface, and most distant apart.
+  - When it is done, spec file is written in the local project `./spec/<burger>.md` and invokes /triage
+
+### triage
+  - Classy skill that classify your problem into several tiers (made by me of course).
+
+| tier | name       | when                                                                                                    | flow                                                                                                       |
+|------|------------|---------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| 0    | just-do-it | trivial, 1 file or fewer, no ambiguity                                                                  | implement directly, no spec                                                                                |
+| 1    | minimal    | most tasks incl. most frontend; clear path, manageable context                                          | spec inline; implement in-session after the interview                                                      |
+| 2    | spec       | context nears the dumb zone, or a hard-to-reverse decision — but the build still fits one fresh session | spec artifact is the handoff; implement in a fresh session loading it; prototype handoffs for open Qs      |
+| 3    | full       | the build itself is too big for one session; must be decomposed into independent slices with review     | spec -> slice -> dispatch -> review. **Not yet wired — recommend tier 2 as interim.**                      |
+
+##### because it directly reads the spec and check all the open questions and challenges, and also the status of it, so it is better to not invoke it by hand. Unless you reached usage limit and you wish to resume lol.
