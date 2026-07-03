@@ -35,7 +35,6 @@ during implementation, not interviewing.
 
 | signal                  | reading                                                                                  |
 |-------------------------|------------------------------------------------------------------------------------------|
-| file/component count    | 1 or fewer -> tier 0; 2-5 -> tier 1-2; 6+ -> tier 2-3                                     |
 | context-size risk       | implementation blows the ~120k dumb zone -> tier 2 floor (spec needed as handoff)        |
 | decision reversibility  | hard-to-reverse (architecture, data model) -> tier 2 floor (review checkpoints)          |
 | open high-fidelity Qs   | each `<response status="open">` is a prototype handoff; many -> tier 2-3                  |
@@ -45,15 +44,19 @@ during implementation, not interviewing.
 
 **Combining signals:** the tier is the MAXIMUM any single signal implies, never
 the average — signals escalate, they do not cancel. Context-size risk and
-hard-to-reverse decisions are hard floors: either one sets tier 2 minimum even
-if the file count reads lower. Do not deflate below a floor; do not inflate
-above the max.
+hard-to-reverse decisions are hard floors: either one sets tier 2 minimum on its
+own. Do not deflate below a floor; do not inflate above the max.
+
+**Raw file count is a hint, not a driver.** The real size questions are
+context-size risk (does the build fit one session?) and work decomposition — not
+the file tally. A one-file change to a hard-to-reverse data model is tier 2; six
+trivial CRUD files are not tier 3. Judge the work, not the count.
 
 ## Tiers
 
 | tier | name       | when                                                                       | flow                                                                                                      |
 |------|------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
-| 0    | just-do-it | trivial, 1 file or fewer, no ambiguity                                     | implement directly, no spec                                                                                |
+| 0    | just-do-it | trivial and self-contained, no ambiguity, no design decisions              | implement directly, no spec                                                                                |
 | 1    | minimal    | most tasks incl. most frontend; clear path, manageable context            | spec inline; implement in-session after the interview                                                     |
 | 2    | spec       | context nears the dumb zone, or a hard-to-reverse decision — but the build still fits one fresh session | spec artifact is the handoff; implement in a fresh session loading it; prototype handoffs for open Qs      |
 | 3    | full       | the build itself is too big for one session; must be decomposed into independent slices dispatched with review between | spec -> slice -> dispatch -> review. **Not yet wired — recommend tier 2 as interim.**                      |

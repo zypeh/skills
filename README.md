@@ -6,7 +6,9 @@ This is some skills written by zypeh that is super opinionated because he eats s
 
 ##### You may install the skill you want via
     # chmod +x install
-    # install ./spec-format
+    # install spec-format
+    # install roast
+    # install triage
 
 ##### Done, it will be added to `~/.claude/skills` which is readable by opencode and claude code. The rest you need to figure it out yourself.
 
