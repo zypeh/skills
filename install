@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Symlink ~/skills/* into ~/.claude/skills. Idempotent.
+# Usage: install [skill ...]   (no args = all)
+set -euo pipefail
+
+src="$(pwd)"
+dst="${HOME}/.claude/skills"
+mkdir -p "$dst"
+
+for name in "${@:-$(ls "$src")}"; do
+  s="$src/$name"
+  [[ -f "$s/SKILL.md" ]] || { echo "skip $name: no SKILL.md" >&2; continue; }
+  [[ -e "$dst/$name" && ! -L "$dst/$name" ]] && { echo "skip $name: real file in the way" >&2; continue; }
+  ln -sfn "$s" "$dst/$name" && echo "-> $name"
+done
