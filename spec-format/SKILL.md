@@ -13,10 +13,12 @@ A `.md` file with YAML frontmatter:
 
 ```yaml
 spec: <short-kebab-name>
-status: drafting | grilled | buildable
+status: draft | in_review | buildable
 ```
 
-`buildable` is the gate: set only when every challenge has a matching resolved response (zero open).
+- `draft` — being authored; challenges still being raised.
+- `in_review` — all challenges raised; resolutions in progress or pending prototypes (open responses exist).
+- `buildable` — the gate: every challenge has a matching resolved response, zero open.
 
 ## Validated core — the ONE contract
 
