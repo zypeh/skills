@@ -54,9 +54,3 @@ A new block is just `<newtag id="...">...</newtag>`. Document it here when adopt
 2. Inline `<challenge>`/`<response>` pairs as they arise during grilling; raise `status="open"` for high-fidelity questions that need a prototype.
 3. Before declaring `buildable`, run the contract check: every challenge has a matching response, none open.
 4. Do NOT clear context before emitting a PRD in this format — the in-context decisions are the input.
-
-## Why this shape
-
-- **One enforced rule** — easy to validate, hard to game.
-- **Plain text constructs** — XML tags + YAML + markdown are universal; "challenge-response" is a trained dyad across GLM, DeepSeek, and Claude. Adversarial color dyads (red/green) are not consistently trained and carry security-domain bleed.
-- **`status="open"`** maps to the grill -> prototype -> grill handoff loop from the aihero.dev grilling methodology.
