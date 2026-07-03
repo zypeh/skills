@@ -38,14 +38,12 @@ Before asking the user anything, map the question dependency tree:
    ```
 
    `deps` is a comma-separated list of ids (`-` = none); an id in another node's
-   `deps` is an edge A -> B meaning B cannot be asked until A resolves. Keep it
-   acyclic with no dangling `deps`. Deliberately **not** JSON or JSONL — a flat
-   list is cheap to mutate (a question is one line, a dependency is one field)
-   and cheap to re-read, which matters because this artifact gets scrapped and
-   rebuilt as the interview churns toward convergence. Yet the `deps` column is
-   machine-parseable, so the answerable set (Phase 2) is computed
-   deterministically from it — this is the one artifact, serving both the agent
-   and the user (step 5), so there is nothing to keep in sync.
+   `deps` is an edge meaning that node can't be asked until the dep resolves.
+   Keep it acyclic, no dangling deps. It's a flat list, not JSON — cheap to
+   mutate (one line per question) and re-read as the tree churns toward
+   convergence, yet the `deps` column stays machine-parseable so Phase 2 computes
+   the answerable set from it. One artifact serves both agent and user (step 5);
+   nothing to keep in sync.
 
 3. Mark each node's fidelity:
    - **low-fidelity** — answerable without a prototype (interviewable).
@@ -70,10 +68,12 @@ no round is wasted on a question whose dependency is still unresolved.
 Walk the tree in rounds. Each round:
 
 1. **Compute the answerable set** — the questions still `open` whose `deps` are
-   all `done` (or empty). Compute this deterministically from the node list (a
-   reachability / topological pass over the `deps` column), not by reasoning it
-   out each round — this guarantees no question is surfaced before its
-   dependencies resolve. See "Model-agnostic operation" for how to run it.
+   all `done` (or empty). Compute this mechanically from the node list (a
+   reachability / topological pass over the `deps` column), never by intuition —
+   this guarantees no question is surfaced before its dependencies resolve (see
+   "Model-agnostic operation"). Then split the result by fidelity: `fid=lo`
+   nodes form the interview pool; any `fid=hi` node that becomes answerable
+   routes to trigger 1 (prototype) and is never placed in an interview batch.
 2. **Select the batch** — from the answerable set, pick up to 4 questions that are
    maximally uncorrelated and distant from each other in the tree (different
    subtrees, covering the most surface). This extracts the most direction from
@@ -87,13 +87,16 @@ Walk the tree in rounds. Each round:
    recommended answer (a concrete default the user can accept or override).
 4. **Resolve** — the user answers all, some, or says "skip — I don't know
    yet" to any. Capture each resolved decision inline as a spec-format
-   `<challenge>`/`<response>` pair (see the `spec-format` skill).
-   Hard-to-reverse decisions become `<decision>` blocks. Scope boundaries
-   become `<non_goal>` blocks. Things assumed true become `<assumption>`
-   blocks.
-5. **Advance** — flip each resolved node's `status` to `done` (a one-word line
-   edit). That unlocks its dependents, which join the next round's answerable
-   set. Recompute the answerable set and repeat.
+   `<challenge>`/`<response>` pair, keeping the node's id stable so it traces
+   back to the tree (node `q3` -> `<challenge id="C3">`). Hard-to-reverse
+   decisions become `<decision>` blocks; scope boundaries `<non_goal>`; things
+   assumed true `<assumption>`. A **skipped** question is not left open to
+   re-ask: park it — proceed with the recommended default from step 3 as an
+   `<assumption>`, or if no safe default exists, record it as an
+   `<open_question>` — so it exits the pool. (See the `spec-format` skill.)
+5. **Advance** — flip each resolved or parked (skipped) node's `status` to
+   `done` (a one-word line edit) so it leaves the open pool. That unlocks its
+   dependents, which join the next round's answerable set. Recompute and repeat.
 
 ### Rules that hold across all rounds
 
@@ -157,8 +160,9 @@ When context is nearing the limit:
 
 1. Cut the interview. Do not keep going into the dumb zone.
 2. Emit a **partial** spec-format artifact to `specs/<short-kebab-name>.md`
-   with everything resolved so far. Open high-fidelity questions stay
-   `status="open"`.
+   with everything resolved so far, frontmatter `status: draft` (the interview
+   has not converged, so triage bounces it back if invoked early). Open
+   high-fidelity questions stay `status="open"`.
 3. Resume the interview in a fresh session, loading the partial spec as input.
 4. **Do not classify yet** — the `triage` skill runs only when the interview
    has converged, not mid-trigger.
@@ -236,20 +240,14 @@ round.
 
 ## Model-agnostic operation
 
-This skill uses environment-neutral language. Both opencode and Claude Code
-provide the primitives it needs:
+Environment-neutral language; interpret each instruction with the tools you
+have:
 
-- **Subagent dispatch:** "spawn a prototype subagent" or "dispatch triage as a
-  subagent" — use the Task tool available in your environment.
-- **User confirmation:** "present the verdict to the user" — use the question
-  or AskUserQuestion tool available in your environment.
-- **Codebase reading:** "read the code" — use the read, grep, or glob tools
-  available in your environment.
-- **Deterministic computation:** "compute the answerable set from the node list"
-  — run a small script or code-execution step available in your environment
-  (reachability over the `deps` column); do not compute it by hand.
-- **File writing:** "write the spec to specs/<name>.md" — use the write or
-  edit tools available in your environment.
+- **Subagent dispatch** (prototype build, triage handoff) — your Task/subagent tool.
+- **User confirmation** — your question / AskUserQuestion tool.
+- **Codebase reading** — your read/grep/glob tools.
+- **Answerable-set computation** — mechanically over the `deps` column: a script
+  for a large tree, a careful topological read for a small one; never by intuition.
+- **File writing** — your write/edit tool.
 
-No environment-specific tool names are hardcoded. Interpret each instruction
-using the tools you have.
+No environment-specific tool names are hardcoded.
