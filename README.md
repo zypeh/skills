@@ -51,11 +51,11 @@ This is some skills written by zypeh that is super opinionated because he eats s
 ### triage
   - Classy skill that classify your problem into several tiers (made by me of course).
 
-| tier | name       | when                                                                                                    | flow                                                                                                       |
-|------|------------|---------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| 0    | just-do-it | trivial, 1 file or fewer, no ambiguity                                                                  | implement directly, no spec                                                                                |
-| 1    | minimal    | most tasks incl. most frontend; clear path, manageable context                                          | spec inline; implement in-session after the interview                                                      |
+| tier | name       | when                                                                       | flow                                                                                                      |
+|------|------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| 0    | just-do-it | trivial and self-contained, no ambiguity, no design decisions              | implement directly, no spec                                                                                |
+| 1    | minimal    | most tasks incl. most frontend; clear path, manageable context            | spec inline; implement in-session after the interview                                                     |
 | 2    | spec       | context nears the dumb zone, or a hard-to-reverse decision — but the build still fits one fresh session | spec artifact is the handoff; implement in a fresh session loading it; prototype handoffs for open Qs      |
-| 3    | full       | the build itself is too big for one session; must be decomposed into independent slices with review     | spec -> slice -> dispatch -> review. **Not yet wired — recommend tier 2 as interim.**                      |
+| 3    | full       | the build itself is too big for one session; must be decomposed into independent slices dispatched with review between | spec -> slice -> dispatch -> review. **Not yet wired — recommend tier 2 as interim.**                      |
 
 ##### because it directly reads the spec and check all the open questions and challenges, and also the status of it, so it is better to not invoke it by hand. Unless you reached usage limit and you wish to resume lol.
